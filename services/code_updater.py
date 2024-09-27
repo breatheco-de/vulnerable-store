@@ -5,7 +5,7 @@ from models import db, Vulnerability
 from datetime import datetime
 
 def apply_vulnerability():
-    file_path, vulnerable_code = generate_vulnerability()
+    file_path, vulnerable_code, vulnerability_type, exploit_info, fix_info = generate_vulnerability()
     
     # Ensure the file exists
     if not os.path.exists(file_path):
@@ -28,10 +28,12 @@ def apply_vulnerability():
     
     # Store vulnerability information in the database
     vulnerability = Vulnerability(
-        type=file_path.split('/')[-1].split('.')[0],  # Use the file name as the vulnerability type
+        type=vulnerability_type,
         file_path=file_path,
         date_added=datetime.utcnow(),
-        description=f"Commit: {commit.hexsha[:7]}"
+        description=f"Commit: {commit.hexsha[:7]}",
+        exploit_info=exploit_info,
+        fix_info=fix_info
     )
     db.session.add(vulnerability)
     db.session.commit()

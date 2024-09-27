@@ -43,3 +43,5 @@ class Vulnerability(db.Model):
     file_path = db.Column(db.String(255), nullable=False)
     date_added = db.Column(db.DateTime, default=datetime.utcnow)
     description = db.Column(db.Text, nullable=True)
+    exploit_info = db.Column(db.Text, nullable=True)
+    fix_info = db.Column(db.Text, nullable=True)
