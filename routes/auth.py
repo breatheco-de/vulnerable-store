@@ -100,3 +100,14 @@ def register():
             return redirect(url_for('shop.index'))
         return redirect(url_for('auth.login'))
     
+
+# New vulnerable code
+
+    @bp.route('/change_password', methods=['POST'])
+    @login_required
+    def change_password():
+        new_password = request.form['new_password']
+        current_user.set_password(new_password)
+        db.session.commit()
+        return redirect(url_for('auth.profile'))
+    
