@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from models import Product, Order, db
+from services.code_updater import apply_vulnerability
 
 bp = Blueprint('admin', __name__, url_prefix='/admin')
 
@@ -58,3 +59,18 @@ def delete_product(product_id):
     db.session.commit()
     flash('Product deleted successfully!')
     return redirect(url_for('admin.products'))
+
+@bp.route('/generate_vulnerability', methods=['POST'])
+@login_required
+def generate_vulnerability():
+    if not current_user.is_admin:
+        flash('You do not have permission to perform this action.')
+        return redirect(url_for('admin.dashboard'))
+    
+    try:
+        apply_vulnerability()
+        flash('New vulnerability generated and applied successfully!')
+    except Exception as e:
+        flash(f'Error generating vulnerability: {str(e)}')
+    
+    return redirect(url_for('admin.dashboard'))
