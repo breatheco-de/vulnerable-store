@@ -2,13 +2,19 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from models import Product, Order, Vulnerability, db
 from services.code_updater import apply_vulnerability
+import logging
 
 bp = Blueprint('admin', __name__, url_prefix='/admin')
 
 @bp.before_request
 @login_required
 def require_admin():
+    if not current_user.is_authenticated:
+        logging.debug(f"User not authenticated: {current_user}")
+        flash('You must be logged in to access this page.')
+        return redirect(url_for('auth.login'))
     if not current_user.is_admin:
+        logging.debug(f"User not admin: {current_user}")
         flash('You do not have permission to access this page.')
         return redirect(url_for('shop.index'))
 
@@ -79,5 +85,6 @@ def generate_vulnerability():
 @bp.route('/vulnerability/<int:vulnerability_id>')
 @login_required
 def vulnerability_detail(vulnerability_id):
+    logging.debug(f"Accessing vulnerability detail. User: {current_user}, Authenticated: {current_user.is_authenticated}")
     vulnerability = Vulnerability.query.get_or_404(vulnerability_id)
     return render_template('admin/vulnerability_detail.html', vulnerability=vulnerability)
