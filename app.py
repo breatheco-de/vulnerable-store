@@ -10,12 +10,14 @@ app.config.from_object(Config)
 login_manager = LoginManager(app)
 login_manager.login_view = 'auth.login'
 
-db.init_app(app)
 migrate = Migrate(app, db)
+db.init_app(app)
+
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
 
 def add_sample_products():
     sample_products = [
@@ -36,15 +38,18 @@ def add_sample_products():
         db.session.add(product)
     db.session.commit()
 
+
 from routes import auth, shop, admin
 
 app.register_blueprint(auth.bp)
 app.register_blueprint(shop.bp)
 app.register_blueprint(admin.bp)
 
+
 @app.route('/')
 def index():
     return shop.index()
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

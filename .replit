@@ -13,39 +13,11 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Start Flask App"
+args = "Database Migration"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
 args = "Flask Server"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "Database Migration"
-
-[[workflows.workflow]]
-name = "Start Flask App"
-author = "agent"
-
-[workflows.workflow.metadata]
-agentRequireRestartOnSave = false
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "python main.py"
-waitForPort = 5000
-
-[[workflows.workflow]]
-name = "Flask Server"
-author = "agent"
-
-[workflows.workflow.metadata]
-agentRequireRestartOnSave = false
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "python main.py"
-waitForPort = 5000
 
 [[workflows.workflow]]
 name = "Database Migration"
@@ -57,6 +29,18 @@ agentRequireRestartOnSave = false
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "flask db migrate -m 'Increase password_hash length' && flask db upgrade"
+
+[[workflows.workflow]]
+name = "Flask Server"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python app.py"
+waitForPort = 5000
 
 [deployment]
 run = ["sh", "-c", "python main.py"]
