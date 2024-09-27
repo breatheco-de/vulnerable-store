@@ -10,11 +10,11 @@ def login():
     if current_user.is_authenticated:
         return redirect(url_for('shop.index'))
     if request.method == 'POST':
-        username = request.form['username']
+        email = request.form['email']
         password = request.form['password']
-        user = User.query.filter_by(username=username).first()
+        user = User.query.filter_by(email=email).first()
         if user is None or not user.check_password(password):
-            flash('Invalid username or password')
+            flash('Invalid email or password')
             return redirect(url_for('auth.login'))
         login_user(user)
         next_page = request.args.get('next')
@@ -34,14 +34,13 @@ def register():
     if current_user.is_authenticated:
         return redirect(url_for('shop.index'))
     if request.method == 'POST':
-        username = request.form['username']
         email = request.form['email']
         password = request.form['password']
-        user = User.query.filter_by(username=username).first()
+        user = User.query.filter_by(email=email).first()
         if user is not None:
-            flash('Please use a different username.')
+            flash('Please use a different email address.')
             return redirect(url_for('auth.register'))
-        user = User(username=username, email=email)
+        user = User(email=email)
         user.set_password(password)
         db.session.add(user)
         db.session.commit()
