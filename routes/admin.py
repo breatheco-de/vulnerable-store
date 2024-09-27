@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from flask_login import login_required, current_user
 from models import Product, Order, Vulnerability, db
 from services.code_updater import apply_vulnerability
@@ -74,12 +74,25 @@ def generate_vulnerability():
         flash('You do not have permission to perform this action.')
         return redirect(url_for('admin.dashboard'))
     
+    logging.debug(f"Generating vulnerability. User: {current_user}, Authenticated: {current_user.is_authenticated}")
+    
     try:
+        # Store the current session
+        current_session = dict(session)
+        
         apply_vulnerability()
+        
+        # Restore the session
+        session.update(current_session)
+        session.modified = True
+        
         flash('New vulnerability generated and applied successfully!')
+        logging.debug("Vulnerability generation successful")
     except Exception as e:
+        logging.error(f"Error generating vulnerability: {str(e)}")
         flash(f'Error generating vulnerability: {str(e)}')
     
+    logging.debug(f"After vulnerability generation. User: {current_user}, Authenticated: {current_user.is_authenticated}")
     return redirect(url_for('admin.dashboard'))
 
 @bp.route('/vulnerability/<int:vulnerability_id>')
@@ -88,12 +101,3 @@ def vulnerability_detail(vulnerability_id):
     logging.debug(f"Accessing vulnerability detail. User: {current_user}, Authenticated: {current_user.is_authenticated}")
     vulnerability = Vulnerability.query.get_or_404(vulnerability_id)
     return render_template('admin/vulnerability_detail.html', vulnerability=vulnerability)
-
-
-# New vulnerable code
-
-    @bp.route('/api/users')
-    def get_users():
-        users = User.query.all()
-        return jsonify([{'id': user.id, 'username': user.username, 'email': user.email} for user in users])
-    
