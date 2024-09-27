@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} - Vulnerable E-commerce{% endblock %}
+
+{% block content %}
+    <h1>{{ product.name }}</h1>
+    <div class="product-detail">
+        <p>{{ product.description }}</p>
+        <p class="price">${{ "%.2f"|format(product.price) }}</p>
+        <p>In stock: {{ product.stock }}</p>
+        <form class="add-to-cart-form" method="POST" action="{{ url_for('shop.add_to_cart') }}">
+            <input type="hidden" name="product_id" value="{{ product.id }}">
+            <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}">
+            <button type="submit">Add to Cart</button>
+        </form>
+    </div>
+{% endblock %}
