@@ -54,4 +54,4 @@ if __name__ == '__main__':
     #     db.create_all()
     #     if Product.query.count() == 0:
     #         add_sample_products()
-    app.run(host='0.0.0.0', port=8000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
