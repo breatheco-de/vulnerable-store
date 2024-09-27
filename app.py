@@ -6,10 +6,19 @@ from flask_login import LoginManager
 from models import Product, User, db
 from datetime import timedelta
 import logging
+from flask_session import Session
+import redis
 
 app = Flask(__name__)
 app.config.from_object(Config)
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=2)  # Set session lifetime to 2 hours
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)  # Set session lifetime to 24 hours
+app.config['SESSION_TYPE'] = 'redis'
+app.config['SESSION_PERMANENT'] = True
+app.config['SESSION_USE_SIGNER'] = True
+app.config['SESSION_REDIS'] = redis.from_url('redis://localhost:6379')
+
+Session(app)
+
 login_manager = LoginManager(app)
 login_manager.login_view = 'auth.login'
 

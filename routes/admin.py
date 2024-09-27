@@ -74,17 +74,29 @@ def generate_vulnerability():
         flash('You do not have permission to perform this action.')
         return redirect(url_for('admin.dashboard'))
     
-    logging.debug(f"Generating vulnerability. User: {current_user}, Authenticated: {current_user.is_authenticated}")
+    logging.debug(f"Starting vulnerability generation. User: {current_user.email}, Authenticated: {current_user.is_authenticated}")
     
     try:
-        # Store the current session
+        # Store the current session data
         current_session = dict(session)
+        
+        # Store user authentication state
+        is_authenticated = current_user.is_authenticated
+        user_id = current_user.id if is_authenticated else None
         
         apply_vulnerability()
         
-        # Restore the session
+        # Restore the session data
         session.update(current_session)
         session.modified = True
+        
+        # Restore user authentication state if needed
+        if is_authenticated and not current_user.is_authenticated:
+            from flask_login import login_user
+            user = User.query.get(user_id)
+            if user:
+                login_user(user)
+                logging.debug(f"Re-authenticated user: {user.email}")
         
         flash('New vulnerability generated and applied successfully!')
         logging.debug("Vulnerability generation successful")
@@ -92,12 +104,12 @@ def generate_vulnerability():
         logging.error(f"Error generating vulnerability: {str(e)}")
         flash(f'Error generating vulnerability: {str(e)}')
     
-    logging.debug(f"After vulnerability generation. User: {current_user}, Authenticated: {current_user.is_authenticated}")
+    logging.debug(f"Completed vulnerability generation. User: {current_user.email}, Authenticated: {current_user.is_authenticated}")
     return redirect(url_for('admin.dashboard'))
 
 @bp.route('/vulnerability/<int:vulnerability_id>')
 @login_required
 def vulnerability_detail(vulnerability_id):
-    logging.debug(f"Accessing vulnerability detail. User: {current_user}, Authenticated: {current_user.is_authenticated}")
+    logging.debug(f"Accessing vulnerability detail. User: {current_user.email}, Authenticated: {current_user.is_authenticated}")
     vulnerability = Vulnerability.query.get_or_404(vulnerability_id)
     return render_template('admin/vulnerability_detail.html', vulnerability=vulnerability)
