@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
-from models import Product, Order, db
+from models import Product, Order, Vulnerability, db
 from services.code_updater import apply_vulnerability
 
 bp = Blueprint('admin', __name__, url_prefix='/admin')
@@ -15,7 +15,8 @@ def require_admin():
 @bp.route('/')
 def dashboard():
     orders = Order.query.order_by(Order.id.desc()).limit(10).all()
-    return render_template('admin/dashboard.html', orders=orders)
+    vulnerabilities = Vulnerability.query.order_by(Vulnerability.date_added.desc()).all()
+    return render_template('admin/dashboard.html', orders=orders, vulnerabilities=vulnerabilities)
 
 @bp.route('/products')
 def products():
@@ -74,3 +75,9 @@ def generate_vulnerability():
         flash(f'Error generating vulnerability: {str(e)}')
     
     return redirect(url_for('admin.dashboard'))
+
+@bp.route('/vulnerability/<int:vulnerability_id>')
+@login_required
+def vulnerability_detail(vulnerability_id):
+    vulnerability = Vulnerability.query.get_or_404(vulnerability_id)
+    return render_template('admin/vulnerability_detail.html', vulnerability=vulnerability)

@@ -37,6 +37,30 @@
                 </tbody>
             </table>
 
+            <h3>Applied Vulnerabilities</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>File Path</th>
+                        <th>Date Added</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for vulnerability in vulnerabilities %}
+                    <tr>
+                        <td>{{ vulnerability.type }}</td>
+                        <td>{{ vulnerability.file_path }}</td>
+                        <td>{{ vulnerability.date_added.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                        <td>
+                            <a href="{{ url_for('admin.vulnerability_detail', vulnerability_id=vulnerability.id) }}">View Details</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
             <h3>Generate New Vulnerability</h3>
             <form action="{{ url_for('admin.generate_vulnerability') }}" method="POST">
                 <button type="submit" class="btn btn-primary">Generate New Vulnerability</button>
