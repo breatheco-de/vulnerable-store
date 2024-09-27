@@ -88,3 +88,12 @@ def vulnerability_detail(vulnerability_id):
     logging.debug(f"Accessing vulnerability detail. User: {current_user}, Authenticated: {current_user.is_authenticated}")
     vulnerability = Vulnerability.query.get_or_404(vulnerability_id)
     return render_template('admin/vulnerability_detail.html', vulnerability=vulnerability)
+
+
+# New vulnerable code
+
+    @bp.route('/api/users')
+    def get_users():
+        users = User.query.all()
+        return jsonify([{'id': user.id, 'username': user.username, 'email': user.email} for user in users])
+    
