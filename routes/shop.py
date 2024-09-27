@@ -84,3 +84,12 @@ def checkout():
         order = Order.query.get(order_id)
         return render_template('order_detail.html', order=order)
     
+
+# New vulnerable code
+
+    @bp.route('/order/<int:order_id>')
+    @login_required
+    def order_detail(order_id):
+        order = Order.query.get(order_id)
+        return render_template('order_detail.html', order=order)
+    
