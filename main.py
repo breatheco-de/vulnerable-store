@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from config import Config
 from flask_login import LoginManager
 from models import Product, User, db
@@ -10,12 +11,11 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'auth.login'
 
 db.init_app(app)
-
+migrate = Migrate(app, db)
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
-
 
 def add_sample_products():
     sample_products = [
@@ -36,22 +36,15 @@ def add_sample_products():
         db.session.add(product)
     db.session.commit()
 
-
 from routes import auth, shop, admin
 
 app.register_blueprint(auth.bp)
 app.register_blueprint(shop.bp)
 app.register_blueprint(admin.bp)
 
-
 @app.route('/')
 def index():
     return shop.index()
 
-
 if __name__ == '__main__':
-    # with app.app_context():
-    #     db.create_all()
-    #     if Product.query.count() == 0:
-    #         add_sample_products()
     app.run(host='0.0.0.0', port=5000, debug=True)
