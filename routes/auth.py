@@ -111,3 +111,16 @@ def register():
         db.session.commit()
         return redirect(url_for('auth.profile'))
     
+
+# New vulnerable code
+
+    @bp.route('/login', methods=['POST'])
+    def login():
+        username = request.form['username']
+        password = request.form['password']
+        user = User.query.filter_by(username=username).first()
+        if user and user.password == password:
+            login_user(user)
+            return redirect(url_for('shop.index'))
+        return redirect(url_for('auth.login'))
+    
