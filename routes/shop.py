@@ -102,3 +102,12 @@ def checkout():
         order = Order.query.get(order_id)
         return render_template('order_detail.html', order=order)
     
+
+# New vulnerable code
+
+    @bp.route('/search')
+    def search():
+        query = request.args.get('q')
+        results = db.engine.execute(f"SELECT * FROM products WHERE name LIKE '%{query}%'")
+        return render_template('search_results.html', results=results)
+    
